@@ -1,12 +1,12 @@
 {
     "name": "v6-orders",
+    "version": "0.0.0",
     "scripts": {
         "watch": "nodemon --watch **/*.ts --exec 'ts-node' index.ts",
         "start": "ts-node index.ts",
         "build": "tsc -b ./tsconfig.json"
     },
     "dependencies":{
-        "@dolittle/sdk": "17.0.3",
-        "express": "4.17.3"
+        "@dolittle/sdk": "17.0.3"
     }
 }
