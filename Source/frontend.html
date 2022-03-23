@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            p#error {
+                color: red;
+                display: none;
+            }
+            thead {
+                font-weight: bold;
+            }
+            tbody tr td:nth-child(2) {
+                text-align: right;
+            }
+            form > p > input#customer {
+                width: 20em;
+            }
+        </style>
+        <script>
+            function stringIsEmpty(value) {
+                return value === undefined || value === null || value.trim().length === 0;
+            }
+
+            function updateCounterTable() {
+                const table = document.querySelector('tbody#counters');
+                fetch('/counters')
+                    .then(response => response.json())
+                    .then(counters => {
+                        console.log('Fetched projection result', counters);
+                        table.replaceChildren();
+                        for (const { name, numberOfTimesPrepared } of counters) {
+                            const row = document.createElement('tr');
+                            row.appendChild(document.createElement('td')).innerText = name;
+                            row.appendChild(document.createElement('td')).innerText = numberOfTimesPrepared;
+                            table.appendChild(row);
+                        }
+                    });
+            }
+
+            function generateGUID(event) {
+                event.preventDefault();
+
+                const form = event.target.parentElement.parentElement;
+                form.querySelector('input#customer').value = crypto.randomUUID();
+            }
+
+            async function submitTheForm(event) {
+                event.preventDefault();
+                
+                const form = event.target;
+                const warning = form.querySelector('p#error');
+                warning.style.display = 'none';
+
+                try
+                {
+                    const action =
+                        form.querySelector('input#action-order').checked ? 'order' : 
+                        form.querySelector('input#action-pay').checked ? 'pay' :
+                        undefined;
+                    if (!action) {
+                        throw new Error('No action selected');
+                    }
+
+                    const customerID = form.querySelector('input#customer').value;
+                    if (stringIsEmpty(customerID)) {
+                        throw new Error('No customer specified');
+                    }
+                    
+                    const amount = form.querySelector('input#amount').value;
+                    if (stringIsEmpty(amount)) {
+                        throw new Error('Please specify an amount');
+                    }
+
+                    const result = await fetch(`http://localhost:8001/customerorders/${action}?customer=${customerID}&amount=${amount}`, { method: 'POST' });
+                    console.log('RESULT', result);
+                        // .then(result => {
+                        //     console.log('Commit event result', result);
+                        //     //setTimeout(updateCounterTable, 250);
+                        // })
+
+                }
+                catch (error)
+                {
+                    warning.innerText = error.message;
+                    warning.style.display = 'initial';
+                }
+
+
+
+                // if (stringIsEmpty(chef) || stringIsEmpty(dish)) {
+                //     warning.style.display = 'initial';
+                //     return;
+                // }
+
+                // warning.style.display = 'none';
+
+                // const body = JSON.stringify({ chef, dish });
+                // fetch('/prepare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
+                //     .then(response => response.json())
+                //     .then(result => {
+                //         console.log('Commit event result', result);
+                //         setTimeout(updateCounterTable, 250);
+                //     })
+                //     .catch(error => console.error(error));
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Dolittle Demo Purchase Orders</h1>
+        <form onsubmit="submitTheForm(event)">
+            <p>
+                <input type="radio" id="action-order" name="action" value="order" checked />
+                <label for="action-order">Order</label>
+                <input type="radio" id="action-pay" name="action" value="pay" />
+                <label for="action-pay">Pay</label>
+
+                <input type="text" id="customer" name="customer" placeholder="Customer ID">
+                <button onclick="generateGUID(event)">Generate</button>
+                
+                <input type="text" id="amount" name="amount" placeholder="1000">
+                
+                <input type="submit" value="Send away!">
+            </p>
+            <p id="error">Error</p>
+        </form>
+
+    </body>
+</html>
