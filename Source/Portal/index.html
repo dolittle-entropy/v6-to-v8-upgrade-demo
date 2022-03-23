@@ -51,8 +51,10 @@
                             row.appendChild(document.createElement('td').appendChild(button));
                             table.appendChild(row);
                         }
-                    });
-                setTimeout(updateCustomerTable, 100);
+                    })
+                    .then(() => {
+                        setTimeout(updateCustomerTable, 100);
+                    })
             }
 
             function generateGUID(event) {
