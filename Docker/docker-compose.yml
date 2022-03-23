@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  mongo:
+    image: dolittle/mongodb:4.2.2
+    hostname: mongo
+    ports:
+      - 27017:27017
+    logging:
+      driver: none
+
+  runtime-orders:
+    image: dolittle/runtime:6.2.0-arm64
+    volumes:
+      - ./microservices.json:/app/.dolittle/microservices.json
+      - ./platform-orders.json:/app/.dolittle/platform.json
+      - ./resources-orders.json:/app/.dolittle/resources.json
+      - ./consents-orders.json:/app/.dolittle/event-horizon-consents.json
+    ports:
+      - 50063:50053
+
+  runtime-statuses:
+    image: dolittle/runtime:6.2.0-arm64
+    volumes:
+      - ./microservices.json:/app/.dolittle/microservices.json
+      - ./platform-orders.json:/app/.dolittle/platform.json
+      - ./resources-statuses.json:/app/.dolittle/resources.json
+      - ./consents-statuses.json:/app/.dolittle/event-horizon-consents.json
+    ports:
+      - 50073:50053

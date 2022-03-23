@@ -1,0 +1,21 @@
+{
+    "445f8ea8-1a6f-40d7-b2fc-796dba92dc44": {
+        "eventStore": {
+            "servers": [ "mongo" ],
+            "database": "orders_event_store"
+        },
+        "projections": {
+            "servers": [ "mongo" ],
+            "database": "orders_projections"
+        },
+        "embeddings": {
+            "servers": [ "mongo" ],
+            "database": "orders_embeddings"
+        },
+        "readModels": {
+            "host": "mongodb://localhost:27017",
+            "database": "orders_readmodels",
+            "useSSL": false
+        }
+    }
+}

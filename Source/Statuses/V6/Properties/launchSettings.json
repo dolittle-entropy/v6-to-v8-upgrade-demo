@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "Statuses": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:8002",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Demo"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+    "445f8ea8-1a6f-40d7-b2fc-796dba92dc44": [
+        {
+            "microservice": "e8d79976-c518-4a58-953f-c883b615d229",
+            "tenant": "445f8ea8-1a6f-40d7-b2fc-796dba92dc44",
+            "stream": "43413d9d-fcf0-48eb-a97d-6098afb7acb0",
+            "partition": "00000000-0000-0000-0000-000000000000",
+            "consent": "9ce1fa3d-93b8-4750-8923-b4da9e18407e"
+        }
+    ]
+}

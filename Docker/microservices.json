@@ -1,0 +1,10 @@
+{
+    "68abba17-2818-49e8-8e4c-2021daaff327": {
+        "host": "runtime-orders",
+        "port": 50052
+    },
+    "e8d79976-c518-4a58-953f-c883b615d229": {
+        "host": "runtime-statuses",
+        "port": 50052
+    }
+}

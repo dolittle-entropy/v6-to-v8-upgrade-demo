@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{5D075DF9-14EA-4B4B-9810-37E335A12436}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Statuses", "Statuses", "{B911959F-4625-4C78-8EB3-4746506CDF5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statuses", "Source\Statuses\V6\Statuses.csproj", "{A703B45D-DCBA-448F-8FF5-0A4D116B104A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A703B45D-DCBA-448F-8FF5-0A4D116B104A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A703B45D-DCBA-448F-8FF5-0A4D116B104A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A703B45D-DCBA-448F-8FF5-0A4D116B104A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A703B45D-DCBA-448F-8FF5-0A4D116B104A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B911959F-4625-4C78-8EB3-4746506CDF5C} = {5D075DF9-14EA-4B4B-9810-37E335A12436}
+		{A703B45D-DCBA-448F-8FF5-0A4D116B104A} = {B911959F-4625-4C78-8EB3-4746506CDF5C}
+	EndGlobalSection
+EndGlobal
