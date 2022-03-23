@@ -33,7 +33,7 @@ export class CustomerOrders extends AggregateRoot {
         this.applyPublic(new CustomerTotalSpendingChanged(this.eventSourceId.toString(), this._spentAmount, this._spentAmount+amount));
     }
 
-    updateCustomerStatus(status: CustomerStatus) {
+    updateCustomerStatus(status: string) {
         this.apply(new CustomerStatusChanged(this.eventSourceId.toString(), status))
     }
 

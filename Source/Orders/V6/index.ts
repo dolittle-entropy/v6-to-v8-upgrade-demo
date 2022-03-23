@@ -1,8 +1,13 @@
 import { Client } from '@dolittle/sdk';
 import { TenantId } from '@dolittle/sdk.execution';
+import { PartitionedFilterResult } from '@dolittle/sdk.events.filtering';
 import express from 'express';
+
 import { CustomerOrders } from './Domain';
 import { CustomerPaidForOrder, CustomerPlacedOrder, CustomerStatusChanged, CustomerTotalSpendingChanged } from './Events';
+import { CustomerStatusElevator } from './Reactions';
+import { Container } from './Container';
+import { Customer } from './Read';
 
 const asyncHandler = (callback: (req: express.Request, res: express.Response) => Promise<void>) =>
     (req: express.Request, res: express.Response, next: express.NextFunction) => callback(req, res).catch(err => {
@@ -18,13 +23,25 @@ const client = Client
         .register(CustomerPaidForOrder)
         .register(CustomerPlacedOrder)
         .register(CustomerStatusChanged))
+    .withFilters(_ => _
+        .createPublicFilter('43413d9d-fcf0-48eb-a97d-6098afb7acb0', _ => _.handle(() => new PartitionedFilterResult(true, '00000000-0000-0000-0000-000000000000'))))
+    .withEventHorizons(_ => _
+        .forTenant(TenantId.development, _ => _
+            .fromProducerMicroservice('e8d79976-c518-4a58-953f-c883b615d229')
+            .fromProducerTenant(TenantId.development)
+            .fromProducerStream('b28ac505-f6b3-408b-9537-7dcf99967f12')
+            .fromProducerPartition('00000000-0000-0000-0000-000000000000')
+            .toScope('72d0b47f-909a-431a-a65c-eed2c4c22567')))
+    .withEventHandlers(_ => _
+        .register(CustomerStatusElevator))
+    .withProjections(_ => _
+        .register(Customer))
+    .withContainer(new Container())
     .build();
 
+Container.client = client;
+
 const app = express();
-
-
-client.eventStore.forTenant(TenantId.development)
-    .commit({ hello: 'world' }, '2d87a9ef-096e-4227-9c5c-2bf7e4be07d6', 'd5f886ce-9a39-4154-b569-a697afb115a2');
 
 app.get('/', (req, res) => res.end('Hello world'));
 app.post('/customerorders/order', asyncHandler(async (req, res) => {
@@ -45,4 +62,11 @@ app.post('/customerorders/pay', asyncHandler(async (req, res) => {
     res.end('Nice!');
 }));
 
+app.get('/customerorders/:customer', asyncHandler(async (req, res) => {
+    const customerId = req.params.customer;
+    var customer = await client
+        .projections.forTenant(TenantId.development).get(Customer, customerId);
+    res.end(JSON.stringify(customer.state, undefined, 4));
+    
+}))
 app.listen(8001, () => console.log('Listening on port 8001'));
