@@ -68,5 +68,14 @@ app.get('/customerorders/:customer', asyncHandler(async (req, res) => {
         .projections.forTenant(TenantId.development).get(Customer, customerId);
     res.end(JSON.stringify(customer.state, undefined, 4));
     
+}));
+
+app.get('/customerorders', asyncHandler(async (req, res) => {
+    var customers = await client
+        .projections.forTenant(TenantId.development).getAll(Customer);
+    let result: {[key: string]: any} = {};
+    customers.forEach((customer, id) => result[id.toString()] = customer.state);
+    res.end(JSON.stringify(result, undefined, 4));
 }))
+
 app.listen(8001, () => console.log('Listening on port 8001'));

@@ -1,7 +1,7 @@
 {
   "name": "v6-to-v8-upgrade-demo",
   "private": true,
-  "workspaces": ["Source/Orders/*"],
+  "workspaces": ["Source/Orders/*", "Source/Portal"],
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

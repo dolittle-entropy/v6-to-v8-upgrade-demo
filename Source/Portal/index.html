@@ -2,6 +2,10 @@
 <html>
     <head>
         <style>
+            p#result {
+                color: green;
+                display: none;
+            }
             p#error {
                 color: red;
                 display: none;
@@ -10,6 +14,9 @@
                 font-weight: bold;
             }
             tbody tr td:nth-child(2) {
+                text-align: right;
+            }
+            tbody tr td:nth-child(3) {
                 text-align: right;
             }
             form > p > input#customer {
@@ -21,20 +28,31 @@
                 return value === undefined || value === null || value.trim().length === 0;
             }
 
-            function updateCounterTable() {
-                const table = document.querySelector('tbody#counters');
-                fetch('/counters')
+            function updateCustomerTable() {
+                const table = document.querySelector('tbody#customers');
+                fetch('/orders/customerorders/')
                     .then(response => response.json())
-                    .then(counters => {
-                        console.log('Fetched projection result', counters);
+                    .then(customers => {
                         table.replaceChildren();
-                        for (const { name, numberOfTimesPrepared } of counters) {
+                        for (const customer in customers) {
+                            const { TotalSpending, OrdersPlaced, Status } = customers[customer];
                             const row = document.createElement('tr');
-                            row.appendChild(document.createElement('td')).innerText = name;
-                            row.appendChild(document.createElement('td')).innerText = numberOfTimesPrepared;
+                            row.appendChild(document.createElement('td')).innerText = customer;
+                            row.appendChild(document.createElement('td')).innerText = TotalSpending;
+                            row.appendChild(document.createElement('td')).innerText = OrdersPlaced;
+                            row.appendChild(document.createElement('td')).innerText = Status;
+                            const button = document.createElement('button');
+                            button.innerText = 'Use';
+                            button.onclick = (event) => {
+                                event.preventDefault();
+                                const form = document.querySelector('form');
+                                form.querySelector('input#customer').value = customer;
+                            };
+                            row.appendChild(document.createElement('td').appendChild(button));
                             table.appendChild(row);
                         }
                     });
+                setTimeout(updateCustomerTable, 100);
             }
 
             function generateGUID(event) {
@@ -48,7 +66,9 @@
                 event.preventDefault();
                 
                 const form = event.target;
+                const result = form.querySelector('p#result');
                 const warning = form.querySelector('p#error');
+                result.style.display = 'none';
                 warning.style.display = 'none';
 
                 try
@@ -71,41 +91,23 @@
                         throw new Error('Please specify an amount');
                     }
 
-                    const result = await fetch(`http://localhost:8001/customerorders/${action}?customer=${customerID}&amount=${amount}`, { method: 'POST' });
-                    console.log('RESULT', result);
-                        // .then(result => {
-                        //     console.log('Commit event result', result);
-                        //     //setTimeout(updateCounterTable, 250);
-                        // })
-
+                    const response = await fetch(`http://localhost:8000/orders/customerorders/${action}?customer=${customerID}&amount=${amount}`, { method: 'POST' });
+                    if (response.ok) {
+                        result.innerText = `${action} successful! 💸`;
+                        result.style.display = 'initial';
+                    } else {
+                        throw new Error(await response.text());
+                    }
                 }
                 catch (error)
                 {
                     warning.innerText = error.message;
                     warning.style.display = 'initial';
                 }
-
-
-
-                // if (stringIsEmpty(chef) || stringIsEmpty(dish)) {
-                //     warning.style.display = 'initial';
-                //     return;
-                // }
-
-                // warning.style.display = 'none';
-
-                // const body = JSON.stringify({ chef, dish });
-                // fetch('/prepare', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
-                //     .then(response => response.json())
-                //     .then(result => {
-                //         console.log('Commit event result', result);
-                //         setTimeout(updateCounterTable, 250);
-                //     })
-                //     .catch(error => console.error(error));
             }
         </script>
     </head>
-    <body>
+    <body onload="updateCustomerTable()">
         <h1>Dolittle Demo Purchase Orders</h1>
         <form onsubmit="submitTheForm(event)">
             <p>
@@ -121,8 +123,21 @@
                 
                 <input type="submit" value="Send away!">
             </p>
+            <p id="result">Result</p>
             <p id="error">Error</p>
         </form>
 
+        <h2>Customers:</h2>
+        <table>
+            <thead>
+                <td>Customer:</td>
+                <td>Spent money:</td>
+                <td># Orders:</td>
+                <td>Status:</td>
+                <td></td>
+            </thead>
+            <tbody id="customers">
+            </tbody>
+        </table>
     </body>
 </html>

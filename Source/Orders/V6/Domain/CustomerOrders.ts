@@ -54,11 +54,7 @@ export class CustomerOrders extends AggregateRoot {
     @on(CustomerPaidForOrder)
     onPaidForOrder(event: CustomerPaidForOrder) {
         this._unpaidAmount -= event.Amount;
-    }
-
-    @on(CustomerTotalSpendingChanged)
-    onDishPrepared(event: CustomerTotalSpendingChanged) {
-        this._spentAmount += event.SpentAmount;
+        this._spentAmount += event.Amount;
     }
 
     @on(CustomerStatusChanged)
