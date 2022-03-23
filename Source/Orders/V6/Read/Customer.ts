@@ -1,4 +1,4 @@
-import { projection, on, ProjectionContext } from '@dolittle/sdk.projections';
+import { projection, on, ProjectionContext } from '@dolittle/sdk.projections';
 import { CustomerPaidForOrder, CustomerPlacedOrder, CustomerStatusChanged } from '../Events';
 
 @projection('e80c71b6-8ce1-47eb-801d-b63542c6c430')
