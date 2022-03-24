@@ -29,3 +29,12 @@ services:
       - ./consents-statuses.json:/app/.dolittle/event-horizon-consents.json
     ports:
       - 50073:50053
+
+  runtime-reviews:
+    image: dolittle/runtime:7.8.0-arm64
+    volumes:
+      - ./appsettings.json:/app/appsettings.json
+      - ./platform-reviews.json:/app/.dolittle/platform.json
+      - ./resources-reviews.json:/app/.dolittle/resources.json
+    ports:
+      - 50073:50053

@@ -1,0 +1,16 @@
+{
+    "extends": "@dolittle/typescript.config",
+    "compilerOptions": {
+        "target": "ES2017",
+        "downlevelIteration": true,
+        "inlineSourceMap": true,
+        "sourceMap": false,
+        "declarationMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceRoot": ".",
+        "outDir": "Distribution"
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "Distribution"],
+}
