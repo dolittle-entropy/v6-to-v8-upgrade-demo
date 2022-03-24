@@ -1,0 +1,5 @@
+services:
+  runtime-statuses:
+    image: dolittle/runtime:8.0.0-meriadoc.2
+    environment:
+      - DOLITTLE__RUNTIME__EVENTSTORE__BACKWARDSCOMPATIBILITY__VERSION=V6

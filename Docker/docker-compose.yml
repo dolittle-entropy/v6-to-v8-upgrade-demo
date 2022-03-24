@@ -11,6 +11,7 @@ services:
   runtime-orders:
     image: dolittle/runtime:6.2.0-arm64
     volumes:
+      - ./appsettings.json:/app/appsettings.json
       - ./microservices.json:/app/.dolittle/microservices.json
       - ./platform-orders.json:/app/.dolittle/platform.json
       - ./resources-orders.json:/app/.dolittle/resources.json
@@ -21,8 +22,9 @@ services:
   runtime-statuses:
     image: dolittle/runtime:6.2.0-arm64
     volumes:
+      - ./appsettings.json:/app/appsettings.json
       - ./microservices.json:/app/.dolittle/microservices.json
-      - ./platform-orders.json:/app/.dolittle/platform.json
+      - ./platform-statuses.json:/app/.dolittle/platform.json
       - ./resources-statuses.json:/app/.dolittle/resources.json
       - ./consents-statuses.json:/app/.dolittle/event-horizon-consents.json
     ports:

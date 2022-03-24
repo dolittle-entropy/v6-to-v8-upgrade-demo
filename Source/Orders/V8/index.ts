@@ -1,12 +1,13 @@
 import { DolittleClient } from '@dolittle/sdk';
 import { IAggregateOf } from '@dolittle/sdk.aggregates';
-import { IProjectionOf } from '@dolittle/sdk.projections';
+import { PartitionedFilterResult } from '@dolittle/sdk.events.filtering';
 import { TenantId } from '@dolittle/sdk.execution';
 import { dolittle, inject } from '@dolittle/sdk.extensions.express';
-import { PartitionedFilterResult } from '@dolittle/sdk.events.filtering';
+import { IProjectionOf } from '@dolittle/sdk.projections';
 import express from 'express';
 
 import { CustomerOrders } from './Domain';
+import './Reactions';  
 import { Customer } from './Read';
 
 (async () => {

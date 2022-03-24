@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{5D075D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Statuses", "Statuses", "{B911959F-4625-4C78-8EB3-4746506CDF5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statuses", "Source\Statuses\V6\Statuses.csproj", "{A703B45D-DCBA-448F-8FF5-0A4D116B104A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusesV6", "Source\Statuses\V6\Statuses.csproj", "{A703B45D-DCBA-448F-8FF5-0A4D116B104A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statuses", "Source\Statuses\V8\Statuses.csproj", "{2E6489DB-C5C7-4371-8CFF-708F7DD13951}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusesV8", "Source\Statuses\V8\Statuses.csproj", "{2E6489DB-C5C7-4371-8CFF-708F7DD13951}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Dolittle.SDK" Version="17.0.0-meriadoc.0" />
+    <PackageReference Include="Dolittle.SDK.Extensions.AspNet" Version="17.0.0-meriadoc.0" />
   </ItemGroup>
 </Project>

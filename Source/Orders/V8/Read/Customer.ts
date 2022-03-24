@@ -5,17 +5,20 @@ import { CustomerPaidForOrder, CustomerPlacedOrder, CustomerStatusChanged } from
 export class Customer {
     TotalSpending: number = 0;
     OrdersPlaced: number = 0;
+    OutstandingBalance: number = 0;
     Status: string = "wood";
     Id: string = "NOTSET";
 
     @on(CustomerPaidForOrder, _ => _.keyFromEventSource())
     onPaidForOrder(event: CustomerPaidForOrder, context: ProjectionContext) {
         this.TotalSpending += event.Amount;
+        this.OutstandingBalance -= event.Amount;
         this.Id = event.CustomerId;
     }
 
     @on(CustomerPlacedOrder, _ => _.keyFromEventSource())
     onPlacedOrder(event: CustomerPlacedOrder, context: ProjectionContext) {
+        this.OutstandingBalance += event.OrderAmount;
         this.OrdersPlaced++;
         this.Id = event.CustomerId;
     }

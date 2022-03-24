@@ -1,6 +1,8 @@
 using Dolittle.SDK;
+using Dolittle.SDK.Aggregates;
 using Dolittle.SDK.Events;
 using Dolittle.SDK.Events.Handling;
+using Dolittle.SDK.Events.Store;
 using Dolittle.SDK.Events.Store.Builders;
 using Events;
 
@@ -11,12 +13,12 @@ public class CustomerStatusElevator
 {
     const decimal GoldUpgradeAmount = 2000;
 
-    readonly EventStoreBuilder _eventStores;
+    readonly IEventStore _eventStore;
     readonly ILogger _logger;
 
-    public CustomerStatusElevator(Client client, ILogger<CustomerStatusElevator> logger)
+    public CustomerStatusElevator(IEventStore eventStore, ILogger<CustomerStatusElevator> logger)
     {
-        _eventStores = client.EventStore;
+        _eventStore = eventStore;
         _logger = logger;
     }
 
@@ -25,9 +27,7 @@ public class CustomerStatusElevator
         if (@event.PreviousSpentAmount < GoldUpgradeAmount && @event.SpentAmount >= GoldUpgradeAmount)
         {
             _logger.LogInformation("Upgrading customer {CustomerId} to gold status, {Amount} they have spent !", @event.CustomerId, @event.SpentAmount);
-            return _eventStores
-                .ForTenant(context.CurrentExecutionContext.Tenant)
-                .CommitPublicEvent(new CustomerStatusChanged(@event.CustomerId, "gold"), context.EventSourceId);
+            return _eventStore.CommitPublicEvent(new CustomerStatusChanged(@event.CustomerId, "gold"), context.EventSourceId);
         }
 
         return Task.CompletedTask;

@@ -29,8 +29,8 @@ export class CustomerOrders extends AggregateRoot {
         if (this._unpaidAmount < amount) {
             throw new Error(`You're paying too much, unpaid amount is ${this._unpaidAmount}`);
         }
-        this.apply(new CustomerPaidForOrder(this.eventSourceId.toString(), amount));
         this.applyPublic(new CustomerTotalSpendingChanged(this.eventSourceId.toString(), this._spentAmount, this._spentAmount+amount));
+        this.apply(new CustomerPaidForOrder(this.eventSourceId.toString(), amount));
     }
 
     updateCustomerStatus(status: string) {
@@ -53,7 +53,6 @@ export class CustomerOrders extends AggregateRoot {
 
     @on(CustomerPaidForOrder)
     onPaidForOrder(event: CustomerPaidForOrder) {
-        console.log(event);
         this._unpaidAmount -= event.Amount;
         this._spentAmount += event.Amount;
     }

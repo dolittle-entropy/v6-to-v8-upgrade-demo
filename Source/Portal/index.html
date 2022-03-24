@@ -19,7 +19,7 @@
             tbody tr td:nth-child(3) {
                 text-align: right;
             }
-            form > p > input#customer {
+            form input#customer {
                 width: 20em;
             }
         </style>
@@ -35,10 +35,11 @@
                     .then(customers => {
                         table.replaceChildren();
                         for (const customer in customers) {
-                            const { TotalSpending, OrdersPlaced, Status } = customers[customer];
+                            const { TotalSpending, OrdersPlaced, Status, OutstandingBalance } = customers[customer];
                             const row = document.createElement('tr');
                             row.appendChild(document.createElement('td')).innerText = customer;
                             row.appendChild(document.createElement('td')).innerText = TotalSpending;
+                            row.appendChild(document.createElement('td')).innerText = OutstandingBalance;
                             row.appendChild(document.createElement('td')).innerText = OrdersPlaced;
                             row.appendChild(document.createElement('td')).innerText = Status;
                             const button = document.createElement('button');
@@ -64,10 +65,10 @@
                 form.querySelector('input#customer').value = crypto.randomUUID();
             }
 
-            async function submitTheForm(event) {
+            async function submitTheForm(action, event) {
                 event.preventDefault();
                 
-                const form = event.target;
+                const form = event.target.parentElement.parentElement;
                 const result = form.querySelector('p#result');
                 const warning = form.querySelector('p#error');
                 result.style.display = 'none';
@@ -75,14 +76,6 @@
 
                 try
                 {
-                    const action =
-                        form.querySelector('input#action-order').checked ? 'order' : 
-                        form.querySelector('input#action-pay').checked ? 'pay' :
-                        undefined;
-                    if (!action) {
-                        throw new Error('No action selected');
-                    }
-
                     const customerID = form.querySelector('input#customer').value;
                     if (stringIsEmpty(customerID)) {
                         throw new Error('No customer specified');
@@ -111,19 +104,15 @@
     </head>
     <body onload="updateCustomerTable()">
         <h1>Dolittle Demo Purchase Orders</h1>
-        <form onsubmit="submitTheForm(event)">
+        <form>
             <p>
-                <input type="radio" id="action-order" name="action" value="order" checked />
-                <label for="action-order">Order</label>
-                <input type="radio" id="action-pay" name="action" value="pay" />
-                <label for="action-pay">Pay</label>
-
                 <input type="text" id="customer" name="customer" placeholder="Customer ID">
                 <button onclick="generateGUID(event)">Generate</button>
                 
-                <input type="text" id="amount" name="amount" placeholder="1000">
+                <input type="text" id="amount" name="amount" value="1000">
                 
-                <input type="submit" value="Send away!">
+                <button onclick="submitTheForm('order', event)">Order</button>
+                <button onclick="submitTheForm('pay', event)">Pay</button>
             </p>
             <p id="result">Result</p>
             <p id="error">Error</p>
@@ -134,6 +123,7 @@
             <thead>
                 <td>Customer:</td>
                 <td>Spent money:</td>
+                <td>Outstanding balance:</td>
                 <td># Orders:</td>
                 <td>Status:</td>
                 <td></td>
