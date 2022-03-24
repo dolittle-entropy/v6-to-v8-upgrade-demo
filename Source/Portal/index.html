@@ -58,6 +58,23 @@
                     })
             }
 
+            function updateReviewTable() {
+                const table = document.querySelector('tbody#reviews');
+                fetch('/reviews/customerreviews/latest')
+                    .then(response => response.json())
+                    .then(reviews => {
+                        table.replaceChildren();
+                        for (const review in reviews) {
+                            const {CustomerId, Review, IsPositive} = reviews[review];
+                            const row = document.createElement('tr');
+                            row.appendChild(document.createElement('td')).innerText = CustomerId;
+                            row.appendChild(document.createElement('td')).innerText = Review;
+                            row.appendChild(document.createElement('td')).innerText = IsPositive ? '😁' : '😡';
+                            table.appendChild(row);
+                        }
+                    })
+            }
+
             function generateGUID(event) {
                 event.preventDefault();
 
@@ -100,9 +117,51 @@
                     warning.style.display = 'initial';
                 }
             }
+
+            async function submitTheReview(event) {
+                event.preventDefault();
+                
+                const form = event.target.parentElement.parentElement;
+                const result = form.querySelector('p#result');
+                const warning = form.querySelector('p#error');
+                result.style.display = 'none';
+                warning.style.display = 'none';
+
+                try
+                {
+                    const customerID = form.querySelector('input#customer').value;
+                    if (stringIsEmpty(customerID)) {
+                        throw new Error('No customer specified');
+                    }
+                    
+                    const review = form.querySelector('textarea#review').value;
+                    if (stringIsEmpty(review)) {
+                        throw new Error('Please specify an review');
+                    }
+
+                    const response = await fetch(`http://localhost:8000/reviews/customerreviews?customer=${customerID}&review=${review}`, { method: 'POST' });
+                    if (response.ok) {
+                        result.innerText = `Review submitted`;
+                        result.style.display = 'initial';
+                        setTimeout(updateReviewTable, 100);
+                    } else {
+                        throw new Error(await response.text());
+                    }
+                }
+                catch (error)
+                {
+                    warning.innerText = error.message;
+                    warning.style.display = 'initial';
+                }
+            }
+
+            function boot() {
+                updateCustomerTable();
+                updateReviewTable();
+            }
         </script>
     </head>
-    <body onload="updateCustomerTable()">
+    <body onload="boot()">
         <h1>Dolittle Demo Purchase Orders</h1>
         <form>
             <p>
@@ -113,6 +172,11 @@
                 
                 <button onclick="submitTheForm('order', event)">Order</button>
                 <button onclick="submitTheForm('pay', event)">Pay</button>
+            </p>
+            <h3>Submit an review:</h3>
+            <p>
+                <textarea id="review"></textarea>
+                <button onclick="submitTheReview(event)">Post</button>
             </p>
             <p id="result">Result</p>
             <p id="error">Error</p>
@@ -129,6 +193,17 @@
                 <td></td>
             </thead>
             <tbody id="customers">
+            </tbody>
+        </table>
+
+        <h2>Latest 10 reviews:</h2>
+        <table>
+            <thead>
+                <td>Customer:</td>
+                <td>Review</td>
+                <td></td>
+            </thead>
+            <tbody id="reviews">
             </tbody>
         </table>
     </body>

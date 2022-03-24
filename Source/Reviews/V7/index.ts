@@ -6,72 +6,53 @@ import { dolittle, inject } from '@dolittle/sdk.extensions.express';
 import { IProjectionOf } from '@dolittle/sdk.projections';
 import express from 'express';
 
-import { CustomerOrders } from './Domain';
-import './Reactions';  
-import { Customer } from './Read';
+import { Reviews } from './Domain';
+import { CustomerLatestReview, Review } from './Read';
 
 (async () => {
-    const client = await DolittleClient
-        .setup(_ => _
-            .withFilters(_ => _
-                .createPublic('43413d9d-fcf0-48eb-a97d-6098afb7acb0').handle(() => new PartitionedFilterResult(true, '00000000-0000-0000-0000-000000000000')))
-            .withEventHorizons(_ => _
-                .forTenant(TenantId.development, _ => _
-                    .fromProducerMicroservice('e8d79976-c518-4a58-953f-c883b615d229')
-                    .fromProducerTenant(TenantId.development)
-                    .fromProducerStream('b28ac505-f6b3-408b-9537-7dcf99967f12')
-                    .fromProducerPartition('00000000-0000-0000-0000-000000000000')
-                    .toScope('72d0b47f-909a-431a-a65c-eed2c4c22567'))))
-        .connect(_ => _
-            .withRuntimeOn('localhost', 50063));
-
     const app = express();
-
-    app.use(dolittle(client))
+    app.use(dolittle(
+        _ => {},
+        _ => _.withRuntimeOn('localhost', 50083)));
 
     app.get('/', (req, res) => res.end('Hello world'));
-    app.post('/customerorders/order', inject(IAggregateOf.for(CustomerOrders))(async (req, res, next, customerOrders) => {
+    app.post('/customerreviews', inject(IAggregateOf.for(Reviews))(async (req, res, next, reviews) => {
         try {
             const customerId = req.query.customer as string;
-            const amount = Number.parseFloat(req.query.amount as string);
-            await customerOrders
+            const review = req.query.review as string;
+            req.body
+            await reviews
                 .get(customerId)
-                .perform(_ => _.placeOrder(amount));
+                .perform(_ => _.giveReview(review));
             res.end('Thanks!');
         } catch (error: any) {
             res.status(500);
             res.end(error.message);
         }
     }));
-
-    app.post('/customerorders/pay', inject(IAggregateOf.for(CustomerOrders))(async (req, res, next, customerOrders) => {
-        try {
-            const customerId = req.query.customer as string;
-            const amount = Number.parseFloat(req.query.amount as string);
-            await customerOrders
-                .get(customerId)
-                .perform(_ => _.payForOrder(amount));
-            res.end('Nice!');   
-        } catch (error: any) {
-            res.status(500);
-            res.end(error.message);
-        }
+    
+    app.get('/customerreviews/latest', inject(IProjectionOf.for(Review))(async (req, res, next, review) => {
+        const reviews = await review.getAll();
+        const sorted = reviews.map(({ Posted, CustomerId, IsPositive, Review}) => ({
+            Posted: Date.parse(Posted as any),
+            CustomerId,
+            IsPositive,
+            Review,
+        }));
+        sorted.sort((a, b) => b.Posted.valueOf() - a.Posted.valueOf());
+        const latest = sorted.slice(0, 10);
+        res.end(JSON.stringify(latest, undefined, 4));
     }));
 
-    app.get('/customerorders/:customer', inject(IProjectionOf.for(Customer))(async (req, res, next, customer) => {
+    app.get('/customerreviews/:customer', inject(IProjectionOf.for(CustomerLatestReview))(async (req, res, next, review) => {
         const customerId = req.params.customer as string;
-        res.end(JSON.stringify(await customer.get(customerId), undefined, 4));
+        res.end(JSON.stringify(await review.get(customerId), undefined, 4));
     }));
 
-    app.get('/customerorders', inject(IProjectionOf.for(Customer))(async (req, res, next, customer) => {
-        var customers = await customer.getAll();
-        let result: {[key: string]: any} = {};
-        for (const customer of customers) {
-            result[customer.Id] = customer;
-        }
-        res.end(JSON.stringify(result, undefined, 4));
+    app.get('/customerreviews', inject(IProjectionOf.for(Review))(async (req, res, next, review) => {
+        res.end(JSON.stringify(await review.getAll(), undefined, 4));
     }));
 
-    app.listen(8001, () => console.log('Listening on port 8001'));
+    app.listen(8003, () => console.log('Listening on port 8003'));
 
 })();
